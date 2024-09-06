@@ -1,116 +1,52 @@
 # Knockout Tournament Generator API
 
-RESTful API built in Django REST Framework that enables the creation of single elimination knockout tournament brackets of 4, 8, 16, 32, or 64 teams.\
-The API allows the creation of a tournament, addition of participants, and the complete generation of the bracket that includes all matches to be played. Once a winner is entered, it automatically becomes a participant on the next round's corresponding match.
+RESTful API built in Django REST Framework that enables the creation of single elimination knockout tournament brackets of 4, 8, 16, 32, or 64 teams.
 
-## Endpoints:
+### Features
+- Create single-elimination tournaments
+- Add participants to tournaments
+- Generates all matches to be played in the tournament in a bracket style
+- When a match is updated, the winner automatically becomes a participant on the next round's corresponding match.
 
-### Create Tournament
-POST `/api/tournaments/`
+### Prerequistes
+- Python 3.x
 
-Request Body
-```
-{
-    "name":"tournament1",
-    "number_of_teams": 4
-}
-```
-Response Body
-```
-{
-    "id": 1,
-    "rounds": [],
-    "name": "tournament1",
-    "generated_key": "qrZFoxmTvb",
-    "number_of_teams": 4,
-    "created_at": "2024-05-23T17:37:34.263638Z"
-}
-```
+### Installation
+1. Clone the repository
+    ```
+    git clone https://github.com/quevedof/tournament_generator_API.git
 
-### Join Tournament
-POST `/api/tournaments/<str:generated_key>/join/`
+    cd tournament_generator_API
+    ``` 
+2. Enable virtual environment (optional)
+    ```
+    python -m venv .venv
+    .venv/Scripts/activate
+    ```
+3. Install dependecies
+    ```
+    pip install -r requirements.txt
+    ```
+4. Make SqliteDB migrations
+    ```
+    py manage.py makemigrations
+    py manage.py migrate
+    ```
+5. Run API server
+    ```
+    py manage.py runserver
+    ```
 
-Request Body
-```
-{
-    "name":"Bob",
-    "surname": "Smith",
-    "email":"bob@gmail.com"
-}
-```
-
-### Get Tournament Participants
-GET `/api/tournaments/{tournamentKey}/participants`
-
-Response Body
-```
-[
-    {
-        "id": 1,
-        "name": "Bobby",
-        "surname": "Smith",
-        "email": "bob@gmail.com"
-    },
-    {
-        "id": 2,
-        "name": "Jake",
-        "surname": "Smith",
-        "email": "jake@gmail.com"
-    },
-]
-```
-
-### Remove a participant from a given tournament
-DELETE `api/tournaments/{tournamentKey}/remove_participant/`
-
-Request Body
-```
-{
-    "id":"5",
-}
-```
-
-### Get Tournament Details by Key
-GET `/api/tournaments/{tournamentKey}`
-
-Response Body
-```
-{
-    "id": 1,
-    "rounds": [],
-    "name": "tournament1",
-    "generated_key": "qrZFoxmTvb",
-    "number_of_teams": 4,
-    "created_at": "2024-05-23T17:37:34.263638Z"
-}
-```
-
-### Generate Tournament Brackets
-POST `/api/tournaments/{tournamentKey}/generate_bracket/`
-
-No Request Body
-
-### Input winner of a match
-PATCH `/api/matches/<int:match_id>/input_winner/`
-
-Request Body
-```
-{
-    "winner": 4,
-}
-```
-
-Response Body
-```
-{
-    "id": 6,
-    "round": 3,
-    "participant1": 2,
-    "participant2": 4,
-    "winner": 4,
-    "next_match": 7
-}
-```
-
-
+### API Endpoints:
+Method | Endpoint | Description
+--- | --- | ---
+POST| `/api/tournaments/`| Create a new tournament
+POST| `/api/tournaments/{tournamentKey}/join/` | Add participant to a tournament
+GET| `/api/tournaments/{tournamentKey}/participants` | Get tournament participants
+DELETE | `/api/tournaments/{tournamentKey}/remove_participant/` | Removes participant from a tournament
+GET| `/api/tournaments/{tournamentKey}`| Get tournament details including all its rounds and matches
+POST| `/api/tournaments/{tournamentKey}/generate_bracket/`| Generates tournament brackets
+PATCH| `/api/matches/<int:match_id>/input_winner/` | Updates a match to add a winner
+GET| `/api/rounds/`| Get all rounds with their matches for all tournaments
+GET| `/api/tournaments/`| Get all tournaments
 
